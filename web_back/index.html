@@ -187,6 +187,22 @@
 
 
 
+            // 获取用户信息
+            // 一进到首页,就发送ajax请求,获取登录的用户的信息
+            $.ajax({
+                url: 'http://localhost:8080/admin/user/info',
+                success: function (backData) {
+                    if (backData.code == 200) {
+                        // 把对应的信息显示在页面的对象标签上
+                        $('.user_info>img').attr('src', backData.data.userPic);
+                        $('.user_info>span').html('欢迎&nbsp;&nbsp;' + backData.data.nickname);
+                        $('.user_center_link>img').attr('src', backData.data.userPic);;
+                    };
+                },
+            });
+            //$('body').html("");
+
+
         });
 
 
