@@ -298,7 +298,7 @@
             <td class="text-center">{{v.state}}</td>
             <td class="text-center">
                 <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
-                <a href="javascript:deleteTr( 1005 );" data-id='{{v.id}}' class="btn btn-danger btn-xs">删除</a>
+                <a href="#" data-id='{{v.id}}' class="btn btn-danger btn-xs btn-delete">删除</a>
             </td>
         </tr>
         {{/each}}
@@ -327,11 +327,14 @@
 
                         // 根据发送ajax请求,获取到的总页数,来重新绘制页码条
                         var totalPages = backData.data.totalPage;
+
+                        // 获取当前页码
+                        window.currentPage = $pagination.twbsPagination('getCurrentPage');
+
                         // 判断, 如果发送ajax请求获取的总页数, 和刚才的总页数不等, 这个时候就要重绘页码条
                         if (totalPages != myTotalPage || isTrue == true) {
                             myTotalPage = totalPages; // 把发送ajax请求获取的总页数,赋值给myTotalPage
-                            // 获取当前页码
-                            var currentPage = $pagination.twbsPagination('getCurrentPage');
+
                             $pagination.twbsPagination('destroy');
                             $pagination.twbsPagination($.extend({}, defaultOpts, {
                                 startPage: 1, // 始终以第一页作为开始页
@@ -409,6 +412,33 @@
                 // 3.发送ajax请求,获取到符合条件的文章
                 getData(1, cateType, cateState);
             });
+
+
+
+            // 需求: 文章删除
+            // 1.给删除按钮们,委托注册事件
+            $('tbody').on('click', 'a.btn-delete', function () {
+                // 2.获取要删除的文章id
+                var id = $(this).attr('data-id');
+                // 3.发送ajax请求,完成删除  //软删除:一般更改一个数据里的信息,表示更改了
+                $.ajax({
+                    type: 'get',
+                    url: 'http://localhost:8080/admin/article/delete',
+                    data: {
+                        id: id,
+                    },
+                    success: function (backData) {
+                        if (backData.code == 204) {
+                            // 4.重新加载一下数据
+                            getData(currentPage, cateType, cateState);
+                        };
+                    },
+                });
+
+            });
+
+
+
         });
     </script>
 
